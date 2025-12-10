@@ -1,6 +1,6 @@
 # Vois Admin
 
-![Vois Dashboard](docs/assets/dashboard.png)
+![Vois Dashboard]()
 
 **Vois** is a modern, single-tenant invoicing platform designed for small businesses and freelancers. It features multi-profile management, GST compliance, and professional PDF generation, all wrapped in a sleek glassmorphism UI.
 
