@@ -1,6 +1,6 @@
 # Vois Admin
 
-![Vois Dashboard]()
+![Vois Dashboard](docs/assets/dashboard.png)
 
 **Vois** is a modern, single-tenant invoicing platform designed for small businesses and freelancers. It features multi-profile management, GST compliance, and professional PDF generation, all wrapped in a sleek glassmorphism UI.
 
@@ -53,7 +53,7 @@
 ## Deployment
 
 Vois is optimized for VPS/Hostinger deployment to support local file uploads.
-See [Shared Hosting Guide](docs/SHARED_HOSTING.md) or [Hostinger Guide](docs/HOSTINGER.md).
+See [Deployment Plan](docs/deployment.md) or [Shared Hosting Guide](docs/SHARED_HOSTING.md) or [Hostinger VPS Guide](docs/HOSTINGER_VPS.md).
 
 ## Tech Stack
 
