@@ -1,0 +1,136 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  role      String   @default("ADMIN")
+  createdAt DateTime @default(now())
+  profiles  CompanyProfile[]
+}
+
+model Client {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String?
+  phone        String?
+  gstin        String?
+  billingAddr  String?
+  shippingAddr String?
+  state        String?     // buyer state for IGST/CGST/SGST logic
+  clientNumber String?     @unique // e.g. "CL-1001" - Made optional for migration compatibility, but should be filled
+  openingBalance Decimal   @default(0.00) @db.Decimal(12,2)
+  createdAt    DateTime @default(now())
+  invoices     Invoice[]
+}
+
+model PaymentTerm {
+  id        Int      @id @default(autoincrement())
+  name      String
+  days      Int
+  invoices  Invoice[]
+}
+
+model TaxRate {
+  id        Int      @id @default(autoincrement())
+  name      String
+  rate      Decimal  @db.Decimal(5,2) // e.g., 18.00
+  lines     InvoiceLine[]
+}
+
+model Invoice {
+  id              Int          @id @default(autoincrement())
+  publicUuid      String       @unique
+  invoiceNumber   String       @unique
+  clientId        Int
+  client          Client       @relation(fields: [clientId], references: [id])
+  issueDate       DateTime
+  dueDate         DateTime?
+  status          InvoiceStatus
+  placeOfSupply   String?      // e.g., "Tamil Nadu"
+  originState     String?      // seller's state, default "Tamil Nadu"
+  subtotal        Decimal      @db.Decimal(12,2)
+  taxTotal        Decimal      @db.Decimal(12,2)
+  totalAmount     Decimal      @db.Decimal(12,2)  // exact total
+  roundedTotal    Decimal      @db.Decimal(12,2)  // rounded payable
+  paymentTermsId  Int?
+  paymentTerms    PaymentTerm? @relation(fields: [paymentTermsId], references: [id])
+  templateName    String
+  copyMode        String?      // "SINGLE" | "DUAL" | "TRIPLE"
+  watermarkMode   String?      // "AUTO" | "CUSTOM"
+  companyProfileId String?
+  companyProfile  CompanyProfile? @relation(fields: [companyProfileId], references: [id])
+  lines           InvoiceLine[]
+  payments        Payment[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@index([publicUuid])
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PARTIALLY_PAID
+  PAID
+  OVERDUE
+}
+
+model InvoiceLine {
+  id          Int      @id @default(autoincrement())
+  invoiceId   Int
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id])
+  description String
+  hsnSac      String?
+  quantity    Decimal  @db.Decimal(12,2)
+  unit        String?
+  unitPrice   Decimal  @db.Decimal(12,2)
+  lineTotal   Decimal  @db.Decimal(12,2)
+  taxRateId   Int?
+  taxRate     TaxRate? @relation(fields: [taxRateId], references: [id])
+}
+
+model CompanyProfile {
+  id             String   @id @default(cuid())
+  name           String
+  address        String
+  state          String
+  gstin          String
+  userId         Int?
+  user           User?    @relation(fields: [userId], references: [id])
+  invoices       Invoice[]
+  isDefault      Boolean  @default(false)
+  currency       String   @default("₹")
+  
+  // Bank Details
+  bankName       String?
+  bankBranch     String?
+  bankAccountNo  String?
+  bankIfsc       String?
+
+  // Images
+  sealUrl        String?
+  signatureUrl   String?
+  upiQrUrl       String?
+  logoUrl        String?
+
+  paymentTerms   String?
+  termsAndConditions String? @default("Goods once sold will not be taken back.\nInterest @ 18% p.a. will be charged for delayed payment.\nSubject to Tamil Nadu Jurisdiction only.")
+
+  updatedAt      DateTime @updatedAt
+}
+
+model Payment {
+  id         Int      @id @default(autoincrement())
+  invoiceId  Int
+  invoice    Invoice  @relation(fields: [invoiceId], references: [id])
+  date       DateTime
+  amount     Decimal  @db.Decimal(12,2)
+  method     String   // e.g., UPI, Bank Transfer, Cash
+}
