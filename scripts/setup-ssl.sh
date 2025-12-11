@@ -72,8 +72,18 @@ sudo nginx -t && sudo systemctl restart nginx
 # 5. Run Certbot (Webroot Mode)
 echo ""
 echo "🔒 Requesting SSL Certificate..."
-# We use webroot mode because it's more reliable with ProxyPass
-sudo certbot --nginx -d $DOMAIN --non-interactive --agree-tos --email roughclick@gmail.com --redirect
+# We use webroot mode because it's more reliable with ProxyPass and manual location blocks
+sudo certbot certonly --webroot -w /var/www/html -d $DOMAIN --non-interactive --agree-tos --email roughclick@gmail.com --deploy-hook "systemctl reload nginx"
+
+# Install cert into Nginx manually or let certbot do it?
+# Certbot certonly DOES NOT install the cert into Nginx config.
+# We must use 'certbot install' or use '--nginx' BUT passed with webroot authenticator?
+# Actually 'certbot --nginx' handles installation.
+# The correct mix is: authenticating via webroot, installer via nginx.
+# Command: sudo certbot --authenticator webroot --installer nginx -w /var/www/html -d $DOMAIN
+
+echo "🔒 Requesting SSL Certificate (Webroot Auth + Nginx Install)..."
+sudo certbot run --authenticator webroot --installer nginx -w /var/www/html -d $DOMAIN --non-interactive --agree-tos --email roughclick@gmail.com --redirect
 
 echo ""
 echo "-----------------------------------"
