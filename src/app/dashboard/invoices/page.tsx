@@ -44,7 +44,7 @@ export default async function InvoicesPage() {
                 </Link>
             </div>
 
-            <div className="bg-white/70 dark:bg-black/40 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-lg rounded-xl overflow-hidden">
+            <div className="bg-white/70 dark:bg-black/40 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-lg rounded-xl overflow-x-auto">
                 <Table>
                     <TableHeader>
                         <TableRow className="bg-muted/30 border-b border-white/10 hover:bg-muted/40">

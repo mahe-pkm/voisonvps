@@ -160,7 +160,7 @@ export function InvoiceForm({ clients, taxRates, companyProfile }: InvoiceFormPr
                     </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-4">
                         {/* Client Selection */}
                         <div className="space-y-2">
@@ -293,8 +293,8 @@ export function InvoiceForm({ clients, taxRates, companyProfile }: InvoiceFormPr
                         </Button>
                     </div>
 
-                    <div className="space-y-2">
-                        <div className="grid grid-cols-12 gap-2 text-sm font-medium text-muted-foreground mb-2 px-2">
+                    <div className="space-y-4">
+                        <div className="hidden md:grid grid-cols-12 gap-2 text-sm font-medium text-muted-foreground mb-2 px-2">
                             <div className="col-span-4">Description</div>
                             <div className="col-span-2">HSN/SAC</div>
                             <div className="col-span-1">Qty</div>
@@ -304,61 +304,80 @@ export function InvoiceForm({ clients, taxRates, companyProfile }: InvoiceFormPr
                         </div>
 
                         {lines.map((line: any, i: number) => (
-                            <div key={i} className="grid grid-cols-12 gap-2 items-center px-2 py-1 border-b last:border-0">
-                                <div className="col-span-4">
-                                    <Input
-                                        placeholder="Description"
-                                        value={line.description}
-                                        onChange={e => updateLine(i, 'description', e.target.value)}
-                                    />
-                                </div>
-                                <div className="col-span-2">
-                                    <Input
-                                        placeholder="HSN"
-                                        value={line.hsnSac || ""}
-                                        onChange={e => updateLine(i, 'hsnSac', e.target.value)}
-                                    />
-                                </div>
-                                <div className="col-span-1">
-                                    <Input
-                                        type="number"
-                                        value={line.quantity}
-                                        onChange={e => updateLine(i, 'quantity', e.target.value)}
-                                    />
-                                </div>
-                                <div className="col-span-2">
-                                    <Input
-                                        type="number"
-                                        value={line.unitPrice}
-                                        onChange={e => updateLine(i, 'unitPrice', e.target.value)}
-                                    />
-                                </div>
-                                <div className="col-span-2">
-                                    <Select
-                                        value={line.taxRateId}
-                                        onValueChange={v => updateLine(i, 'taxRateId', v)}
-                                    >
-                                        <SelectTrigger className="h-9">
-                                            <SelectValue placeholder="Tax" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {rates.map(r => (
-                                                <SelectItem key={r.id} value={r.id.toString()}>{r.name} ({r.rate.toString()}%)</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="col-span-1 flex items-center justify-end gap-2">
-                                    <span className="font-mono text-sm truncate">
-                                        {calculateInvoiceTotals([{
-                                            quantity: line.quantity,
-                                            unitPrice: line.unitPrice,
-                                            taxRatePercent: 0
-                                        }]).subtotal.toFixed(0)}
-                                    </span>
-                                    <Button type="button" variant="ghost" size="icon" onClick={() => removeLine(i)}>
-                                        <Trash className="h-4 w-4 text-muted-foreground hover:text-destructive" />
-                                    </Button>
+                            <div key={i} className="group relative bg-card md:bg-transparent border md:border-0 md:border-b last:border-0 rounded-lg md:rounded-none p-4 md:p-1 shadow-sm md:shadow-none mb-4 md:mb-0">
+                                <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-2 items-start md:items-center">
+                                    {/* Mobile: Header Row */}
+                                    <div className="md:col-span-4 w-full">
+                                        <Label className="md:hidden text-xs text-muted-foreground mb-1 block">Description</Label>
+                                        <Input
+                                            placeholder="Description"
+                                            value={line.description}
+                                            onChange={e => updateLine(i, 'description', e.target.value)}
+                                        />
+                                    </div>
+
+                                    {/* Mobile: 2-col grid for details */}
+                                    <div className="grid grid-cols-2 gap-2 md:contents">
+                                        <div className="md:col-span-2">
+                                            <Label className="md:hidden text-xs text-muted-foreground mb-1 block">HSN</Label>
+                                            <Input
+                                                placeholder="HSN"
+                                                value={line.hsnSac || ""}
+                                                onChange={e => updateLine(i, 'hsnSac', e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="md:col-span-1">
+                                            <Label className="md:hidden text-xs text-muted-foreground mb-1 block">Qty</Label>
+                                            <Input
+                                                type="number"
+                                                value={line.quantity}
+                                                onChange={e => updateLine(i, 'quantity', e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Mobile: 2-col grid for Pricing */}
+                                    <div className="grid grid-cols-2 gap-2 md:contents">
+                                        <div className="md:col-span-2">
+                                            <Label className="md:hidden text-xs text-muted-foreground mb-1 block">Rate</Label>
+                                            <Input
+                                                type="number"
+                                                value={line.unitPrice}
+                                                onChange={e => updateLine(i, 'unitPrice', e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="md:col-span-2">
+                                            <Label className="md:hidden text-xs text-muted-foreground mb-1 block">Tax</Label>
+                                            <Select
+                                                value={line.taxRateId}
+                                                onValueChange={v => updateLine(i, 'taxRateId', v)}
+                                            >
+                                                <SelectTrigger className="h-9">
+                                                    <SelectValue placeholder="Tax" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {rates.map(r => (
+                                                        <SelectItem key={r.id} value={r.id.toString()}>{r.name} ({r.rate.toString()}%)</SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                    </div>
+
+                                    {/* Total & Action */}
+                                    <div className="md:col-span-1 flex items-center justify-between md:justify-end gap-2 mt-2 md:mt-0 pt-2 md:pt-0 border-t md:border-0">
+                                        <span className="text-sm font-medium md:hidden">Total:</span>
+                                        <span className="font-mono text-sm truncate font-bold">
+                                            {calculateInvoiceTotals([{
+                                                quantity: line.quantity,
+                                                unitPrice: line.unitPrice,
+                                                taxRatePercent: 0
+                                            }]).subtotal.toFixed(0)}
+                                        </span>
+                                        <Button type="button" variant="ghost" size="icon" onClick={() => removeLine(i)} className="md:ml-2">
+                                            <Trash className="h-4 w-4 text-red-500 hover:text-red-700" />
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
                         ))}
