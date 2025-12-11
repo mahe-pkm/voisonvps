@@ -24,10 +24,11 @@ export function MobileNav({ profiles, currentProfileId, userEmail, userRole }: M
     }, [pathname])
 
     return (
-        <div className="md:hidden flex items-center p-4 border-b bg-background sticky top-0 z-50">
+    return (
+        <div className="md:hidden flex items-center justify-between p-4 border-b border-sidebar-border bg-background/80 backdrop-blur-md sticky top-0 z-50 h-16">
             <Sheet open={open} onOpenChange={setOpen}>
                 <SheetTrigger asChild>
-                    <Button variant="ghost" size="icon" className="md:hidden">
+                    <Button variant="ghost" size="icon" className="md:hidden -ml-2">
                         <Menu className="h-6 w-6" />
                         <span className="sr-only">Toggle menu</span>
                     </Button>
@@ -44,8 +45,22 @@ export function MobileNav({ profiles, currentProfileId, userEmail, userRole }: M
                     </div>
                 </SheetContent>
             </Sheet>
-            <div className="ml-4 font-bold text-lg">Invoicer</div>
+
+            <div className="font-bold text-lg flex items-center gap-2">
+                <div className="h-6 w-6 rounded-md bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white text-xs font-bold">I</div>
+                Invoicer
+            </div>
+
+            <div className="w-10 flex justify-end">
+                {/* Placeholder for balance check or profile avatar if needed later */}
+                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs shadow-sm">
+                    {userEmail?.[0].toUpperCase()}
+                </div>
+            </div>
         </div>
+
+    )
+}
 
     )
 }
