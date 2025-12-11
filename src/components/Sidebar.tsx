@@ -96,8 +96,9 @@ export function SidebarContent({ profiles, currentProfileId, userEmail, userRole
                 </Link>
             </div>
 
-            <div className="px-8 pb-6 text-[10px] text-center text-sidebar-foreground/30 uppercase tracking-widest font-medium">
-                Developed by Dev.Roughclick
+            <div className="px-8 pb-6 text-[10px] text-center text-sidebar-foreground/30 font-medium">
+                <div className="uppercase tracking-widest mb-1">Developed by Dev.Roughclick</div>
+                <div className="text-[9px]">v0.1.0</div>
             </div>
         </>
     )
