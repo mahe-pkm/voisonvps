@@ -32,7 +32,7 @@ export function CompanyProfileForm({ initialData }: { initialData: CompanyProfil
     }
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl bg-white p-6 rounded-md border shadow-sm">
+        <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl bg-card text-card-foreground p-6 rounded-md border shadow-sm">
             <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2 col-span-2">
                     <Label htmlFor="name">Company Name</Label>
