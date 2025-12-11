@@ -11,7 +11,25 @@ interface ShareButtonProps {
 export function ShareButton({ url }: ShareButtonProps) {
     const handleShare = async () => {
         try {
-            await navigator.clipboard.writeText(url)
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(url)
+            } else {
+                // Fallback for HTTP (Unsecured)
+                const textArea = document.createElement("textarea")
+                textArea.value = url
+                textArea.style.position = "fixed"
+                textArea.style.left = "-9999px"
+                textArea.style.top = "0"
+                document.body.appendChild(textArea)
+                textArea.focus()
+                textArea.select()
+                try {
+                    document.execCommand('copy')
+                } catch (err) {
+                    console.error('Fallback: Oops, unable to copy', err)
+                }
+                document.body.removeChild(textArea)
+            }
             toast.success("Link copied to clipboard!")
         } catch (err) {
             toast.error("Failed to copy link")
