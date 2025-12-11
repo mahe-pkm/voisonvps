@@ -10,10 +10,10 @@ echo "📦 Installing System Dependencies..."
 sudo apt update
 sudo apt install -y curl git ufw postgresql postgresql-contrib nginx certbot python3-certbot-nginx
 
-# 2. Install Node.js 18
-if ! command -v node &> /dev/null; then
-    echo "🟢 Installing Node.js 18..."
-    curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+# 2. Install Node.js 20 (Required for Next.js 15+)
+if ! command -v node &> /dev/null || [[ $(node -v) =~ ^v1[0-9]\. ]]; then
+    echo "🟢 Installing Node.js 20..."
+    curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
     sudo apt install -y nodejs
 fi
 
