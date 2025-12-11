@@ -21,21 +21,30 @@ fi
 echo "⚙️ Installing PM2..."
 sudo npm install -g pm2
 
-# 4. Setup Database
-echo "🗄️ Setting up PostgreSQL..."
-sudo systemctl start postgresql
-sudo -u postgres psql -c "CREATE USER vois_admin WITH ENCRYPTED PASSWORD 'Mahezenfone2@';" 2>/dev/null || echo "User exists"
-sudo -u postgres psql -c "CREATE DATABASE vois OWNER vois_admin;" 2>/dev/null || echo "Database exists"
-sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE vois TO vois_admin;"
-sudo -u postgres psql -c "ALTER USER vois_admin CREATEDB;"
-
-# 5. Environment Variables
+# 4. Environment Variables
 echo "📝 Configuring Environment..."
-if [ ! -f .env ]; then
+if [ -f .env ]; then
+    echo "✅ Found existing .env file, using it."
+else
+    echo "⚠️ No .env file found! Creating default local configuration..."
     echo 'DATABASE_URL="postgresql://vois_admin:Mahezenfone2%40@localhost:5432/vois?schema=public"' > .env
     echo 'NEXTAUTH_URL="http://localhost:3000"' >> .env
     echo 'NEXTAUTH_SECRET="supersecret_generated_key_change_me"' >> .env
-    echo ".env created."
+fi
+
+# Load env to check DB connection
+export $(grep -v '^#' .env | xargs)
+
+# 5. Setup Database (Local only if DATABASE_URL contains localhost)
+if [[ "$DATABASE_URL" == *"localhost"* ]]; then
+    echo "🗄️ Setting up Local PostgreSQL..."
+    sudo systemctl start postgresql
+    sudo -u postgres psql -c "CREATE USER vois_admin WITH ENCRYPTED PASSWORD 'Mahezenfone2@';" 2>/dev/null || echo "User exists"
+    sudo -u postgres psql -c "CREATE DATABASE vois OWNER vois_admin;" 2>/dev/null || echo "Database exists"
+    sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE vois TO vois_admin;"
+    sudo -u postgres psql -c "ALTER USER vois_admin CREATEDB;"
+else
+    echo "🌍 Remote Database detected (Supabase/External). Skipping local DB setup."
 fi
 
 # 6. Install Project Dependencies
@@ -49,23 +58,31 @@ echo "🔄 Running Migrations..."
 npx prisma generate
 npx prisma migrate deploy
 # Determine if we need to seed
-USER_COUNT=$(sudo -u postgres psql -d vois -c "SELECT COUNT(*) FROM \"User\";" -t | xargs)
-if [ "$USER_COUNT" == "0" ]; then
-    echo "🌱 Seeding Admin User..."
-    node <<EOF
-    const { Client } = require('pg');
-    const bcrypt = require('bcrypt');
-    require('dotenv').config();
-    const client = new Client({ connectionString: process.env.DATABASE_URL });
-    async function seed() {
+# For remote DB, we skip the seed check or assume user handles it manually to avoid messing up prod data
+# Or we can run it safely. Seeding admin user is safe if ON CONFLICT DO NOTHING.
+echo "🌱 Seeding Admin User..."
+node <<EOF
+const { Client } = require('pg');
+const bcrypt = require('bcrypt');
+require('dotenv').config();
+const connectionString = process.env.DATABASE_URL;
+// Handle Supabase transaction pooler (port 6543) vs Session (5432)
+// This script uses standard pg client.
+const client = new Client({ connectionString, ssl: { rejectUnauthorized: false } });
+async function seed() {
+    try {
         await client.connect();
         const hash = await bcrypt.hash('changeme', 10);
         await client.query(\`INSERT INTO "User" (email, password, role, "createdAt") VALUES ('admin@example.com', \$1, 'ADMIN', NOW()) ON CONFLICT DO NOTHING\`, [hash]);
+        console.log("Admin user seeded (if not exists).");
+    } catch (e) {
+        console.error("Seeding error:", e.message);
+    } finally {
         await client.end();
     }
-    seed();
+}
+seed();
 EOF
-fi
 
 # 8. Build
 echo "🏗️ Building Application..."

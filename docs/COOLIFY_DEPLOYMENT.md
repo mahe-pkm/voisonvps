@@ -42,6 +42,7 @@
     *   Look for the `postgres://...` URL in the database details.
     *   By default, it uses the internal Docker network name.
     *   **IMPORTANT**: For the Vois app to connect, you will use this internal URL.
+    postgres://postgres:CVHWTkQ6ibeNTMDjzDFTI8YEErcEA55nlwejGIZ7Xv33mD0yoihr4NHdRPN7TDfL@ywg88kscw0k0k080gskwwok8:5432/postgres
 
 ---
 
