@@ -24,7 +24,6 @@ export function MobileNav({ profiles, currentProfileId, userEmail, userRole }: M
     }, [pathname])
 
     return (
-    return (
         <div className="md:hidden flex items-center justify-between p-4 border-b border-sidebar-border bg-background/80 backdrop-blur-md sticky top-0 z-50 h-16">
             <Sheet open={open} onOpenChange={setOpen}>
                 <SheetTrigger asChild>
@@ -58,9 +57,6 @@ export function MobileNav({ profiles, currentProfileId, userEmail, userRole }: M
                 </div>
             </div>
         </div>
-
-    )
-}
 
     )
 }
