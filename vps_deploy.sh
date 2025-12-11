@@ -30,6 +30,12 @@ else
     echo 'DATABASE_URL="postgresql://vois_admin:Mahezenfone2%40@localhost:5432/vois?schema=public"' > .env
     echo 'NEXTAUTH_URL="http://localhost:3000"' >> .env
     echo 'NEXTAUTH_SECRET="supersecret_generated_key_change_me"' >> .env
+    echo 'NEXT_PUBLIC_APP_URL="http://localhost:3000"' >> .env
+fi
+
+# Ensure NEXT_PUBLIC_APP_URL is set for PDF generation if missing
+if ! grep -q "NEXT_PUBLIC_APP_URL" .env; then
+    echo 'NEXT_PUBLIC_APP_URL="http://localhost:3000"' >> .env
 fi
 
 # Load env to check DB connection
@@ -53,36 +59,19 @@ echo "📥 Installing Project Packages..."
 rm -rf node_modules
 npm install
 
+# Install Playwright Browsers (Required for PDF)
+echo "🎭 Installing Playwright Browsers..."
+npx playwright install chromium
+npx playwright install-deps chromium
+
 # 7. Database Migration & Seed
 echo "🔄 Running Migrations..."
 npx prisma generate
 npx prisma migrate deploy
-# Determine if we need to seed
-# For remote DB, we skip the seed check or assume user handles it manually to avoid messing up prod data
-# Or we can run it safely. Seeding admin user is safe if ON CONFLICT DO NOTHING.
-echo "🌱 Seeding Admin User..."
-node <<EOF
-const { Client } = require('pg');
-const bcrypt = require('bcrypt');
-require('dotenv').config();
-const connectionString = process.env.DATABASE_URL;
-// Handle Supabase transaction pooler (port 6543) vs Session (5432)
-// This script uses standard pg client.
-const client = new Client({ connectionString, ssl: { rejectUnauthorized: false } });
-async function seed() {
-    try {
-        await client.connect();
-        const hash = await bcrypt.hash('changeme', 10);
-        await client.query(\`INSERT INTO "User" (email, password, role, "createdAt") VALUES ('admin@example.com', \$1, 'ADMIN', NOW()) ON CONFLICT DO NOTHING\`, [hash]);
-        console.log("Admin user seeded (if not exists).");
-    } catch (e) {
-        console.error("Seeding error:", e.message);
-    } finally {
-        await client.end();
-    }
-}
-seed();
-EOF
+
+echo "🌱 Seeding Database (Tax Rates, Admin User)..."
+# Using ts-node to run the full seed script
+npx ts-node prisma/seed.ts
 
 # 8. Build
 echo "🏗️ Building Application..."
