@@ -1,6 +1,7 @@
 "use client"
 
 import { Menu } from "lucide-react"
+import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -45,10 +46,10 @@ export function MobileNav({ profiles, currentProfileId, userEmail, userRole }: M
                 </SheetContent>
             </Sheet>
 
-            <div className="font-bold text-lg flex items-center gap-2">
+            <Link href="/dashboard" className="font-bold text-lg flex items-center gap-2 cursor-pointer">
                 <div className="h-6 w-6 rounded-md bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white text-xs font-bold">I</div>
                 Invoicer
-            </div>
+            </Link>
 
             <div className="w-10 flex justify-end">
                 {/* Placeholder for balance check or profile avatar if needed later */}

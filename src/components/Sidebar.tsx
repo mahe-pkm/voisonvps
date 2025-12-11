@@ -34,14 +34,14 @@ export function SidebarContent({ profiles, currentProfileId, userEmail, userRole
     return (
         <>
             <div className="p-6 border-b border-sidebar-border">
-                <div className="flex items-center gap-2 mb-6">
+                <Link href="/dashboard" className="flex items-center gap-2 mb-6 cursor-pointer transition-opacity hover:opacity-80">
                     <div className="h-8 w-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/30">
                         I
                     </div>
                     <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400">
                         Invoicer
                     </span>
-                </div>
+                </Link>
                 <ProfileSwitcher profiles={profiles} currentProfileId={currentProfileId} />
             </div>
 
