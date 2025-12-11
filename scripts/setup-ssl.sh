@@ -38,7 +38,14 @@ CONFIG_FILE="/etc/nginx/sites-available/vois"
 sudo bash -c "cat > $CONFIG_FILE" <<EOF
 server {
     listen 80;
+    listen [::]:80;
     server_name $DOMAIN www.$DOMAIN;
+
+    # Certbot Challenges (Robust)
+    location ~ /.well-known/acme-challenge {
+        allow all;
+        root /var/www/html;
+    }
 
     location / {
         proxy_pass http://localhost:3000;
@@ -53,6 +60,7 @@ EOF
 
 # 4. Enable Site
 echo "🔗 Enabling Site..."
+sudo mkdir -p /var/www/html
 sudo ln -sf /etc/nginx/sites-available/vois /etc/nginx/sites-enabled/
 # Remove default if present
 sudo rm -f /etc/nginx/sites-enabled/default
@@ -61,10 +69,11 @@ sudo rm -f /etc/nginx/sites-enabled/default
 echo "🔄 Restarting Nginx..."
 sudo nginx -t && sudo systemctl restart nginx
 
-# 5. Run Certbot
+# 5. Run Certbot (Webroot Mode)
 echo ""
 echo "🔒 Requesting SSL Certificate..."
-sudo certbot --nginx -d $DOMAIN
+# We use webroot mode because it's more reliable with ProxyPass
+sudo certbot --nginx -d $DOMAIN --non-interactive --agree-tos --email roughclick@gmail.com --redirect
 
 echo ""
 echo "-----------------------------------"
