@@ -21,9 +21,8 @@ interface SidebarProps {
     userRole?: string
 }
 
-export function Sidebar({ profiles, currentProfileId, userEmail, userRole }: SidebarProps) {
-    const pathname = usePathname()
-
+// Reusable Sidebar Content for Mobile/Desktop
+export function SidebarContent({ profiles, currentProfileId, userEmail, userRole, pathname }: SidebarProps & { pathname: string }) {
     const links = [
         { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
         { href: "/dashboard/invoices/new", label: "New Invoice", icon: PlusCircle },
@@ -33,12 +32,8 @@ export function Sidebar({ profiles, currentProfileId, userEmail, userRole }: Sid
     ]
 
     return (
-        <motion.aside
-            initial={{ x: -20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            className="w-72 hidden md:flex flex-col h-screen fixed left-0 top-0 z-40 border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-2xl"
-        >
-            <div className="p-6 border-b border-white/10">
+        <>
+            <div className="p-6 border-b border-sidebar-border">
                 <div className="flex items-center gap-2 mb-6">
                     <div className="h-8 w-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/30">
                         I
@@ -82,7 +77,7 @@ export function Sidebar({ profiles, currentProfileId, userEmail, userRole }: Sid
                 })}
             </nav>
 
-            <div className="p-4 border-t border-white/10 bg-white/30 dark:bg-black/20 m-4 rounded-2xl backdrop-blur-md">
+            <div className="p-4 border-t border-sidebar-border bg-sidebar-accent/10 m-4 rounded-2xl backdrop-blur-md">
                 <div className="flex items-center gap-3 px-2 mb-3">
                     <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-md">
                         {userEmail?.[0].toUpperCase()}
@@ -101,9 +96,29 @@ export function Sidebar({ profiles, currentProfileId, userEmail, userRole }: Sid
                 </Link>
             </div>
 
-            <div className="px-8 pb-6 text-[10px] text-center text-gray-400/60 dark:text-white/20 uppercase tracking-widest font-medium">
+            <div className="px-8 pb-6 text-[10px] text-center text-sidebar-foreground/30 uppercase tracking-widest font-medium">
                 Developed by Dev.Roughclick
             </div>
-        </motion.aside >
+        </>
+    )
+}
+
+export function Sidebar({ profiles, currentProfileId, userEmail, userRole }: SidebarProps) {
+    const pathname = usePathname()
+
+    return (
+        <motion.aside
+            initial={{ x: -20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            className="w-72 hidden md:flex flex-col h-screen fixed left-0 top-0 z-40 border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-2xl"
+        >
+            <SidebarContent
+                profiles={profiles}
+                currentProfileId={currentProfileId}
+                userEmail={userEmail}
+                userRole={userRole}
+                pathname={pathname}
+            />
+        </motion.aside>
     )
 }

@@ -5,6 +5,7 @@ import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { getCurrentProfileId } from "@/lib/currentProfile"
 import { Sidebar } from "@/components/Sidebar"
+import { MobileNav } from "@/components/MobileNav"
 
 export default async function DashboardLayout({
     children,
@@ -26,7 +27,15 @@ export default async function DashboardLayout({
 
     return (
         <div className="flex min-h-screen bg-background text-foreground bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-100 via-background to-background dark:from-blue-950/30 dark:via-background dark:to-background">
-            {/* Animated & Glass Sidebar */}
+            {/* Mobile Navigation (Hamburger) */}
+            <MobileNav
+                profiles={profiles}
+                currentProfileId={currentProfileId || ""}
+                userEmail={session.user?.email || ""}
+                userRole={session.user?.role || "User"}
+            />
+
+            {/* Animated & Glass Sidebar (Desktop) */}
             <Sidebar
                 profiles={profiles}
                 currentProfileId={currentProfileId || ""}
