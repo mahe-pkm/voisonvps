@@ -10,7 +10,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { MoreHorizontal, Trash, CreditCard, Eye, FileText, Share2, Pencil } from "lucide-react"
+import { MoreHorizontal, Trash, CreditCard, Eye, FileText, Share2, Pencil, Printer } from "lucide-react"
 import { deleteInvoice } from "@/app/dashboard/invoices/actions"
 import { toast } from "sonner"
 import { PaymentDialog } from "@/components/PaymentDialog"
@@ -65,6 +65,27 @@ export function InvoiceActions({ invoice, appUrl }: InvoiceActionsProps) {
                             <Eye className="mr-2 h-4 w-4" /> View Public
                         </Link>
                     </DropdownMenuItem>
+
+                    <DropdownMenuItem asChild>
+                        <button onClick={() => {
+                            const width = 800;
+                            const height = 900;
+                            const left = (screen.width - width) / 2;
+                            const top = (screen.height - height) / 2;
+                            const w = window.open(`${appUrl}/bill/${invoice.publicUuid}`, '_blank', `width=${width},height=${height},top=${top},left=${left}`);
+                            if (w) {
+                                w.onload = () => { w.print() }
+                            }
+                        }} className="cursor-pointer">
+                            <i className="lucide-printer mr-2 h-4 w-4" style={{ display: 'inline-block', width: '1em', height: '1em', strokeWidth: 2, stroke: 'currentColor', fill: 'none' }}>
+                                <path d="M6 9V2h12v7"></path>
+                                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                                <path d="M6 14h12v8H6z"></path>
+                            </i>
+                            Print Invoice
+                        </button>
+                    </DropdownMenuItem>
+
 
                     <DropdownMenuItem asChild>
                         <Link href={`/api/pdf/${invoice.publicUuid}?mode=ORIGINAL`} target="_blank" className="cursor-pointer">
