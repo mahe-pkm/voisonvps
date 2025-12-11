@@ -26,7 +26,7 @@ export default async function DashboardLayout({
     const currentProfileId = await getCurrentProfileId()
 
     return (
-        <div className="flex min-h-screen bg-background text-foreground bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-100 via-background to-background dark:from-blue-950/30 dark:via-background dark:to-background">
+        <div className="flex flex-col md:flex-row min-h-screen bg-background text-foreground bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-100 via-background to-background dark:from-blue-950/30 dark:via-background dark:to-background">
             {/* Mobile Navigation (Hamburger) */}
             <MobileNav
                 profiles={profiles}
