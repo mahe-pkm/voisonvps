@@ -36,7 +36,7 @@ export function Sidebar({ profiles, currentProfileId, userEmail, userRole }: Sid
         <motion.aside
             initial={{ x: -20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            className="w-72 hidden md:flex flex-col h-screen fixed left-0 top-0 z-40 border-r border-white/20 bg-white/60 dark:bg-black/40 backdrop-blur-xl shadow-2xl"
+            className="w-72 hidden md:flex flex-col h-screen fixed left-0 top-0 z-40 border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-2xl"
         >
             <div className="p-6 border-b border-white/10">
                 <div className="flex items-center gap-2 mb-6">
@@ -67,9 +67,9 @@ export function Sidebar({ profiles, currentProfileId, userEmail, userRole }: Sid
                             )}
                             <div className={`
                                 relative flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-colors duration-200
-                                ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'}
+                                ${isActive ? 'text-sidebar-primary font-bold bg-sidebar-accent' : 'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50'}
                             `}>
-                                <Icon className={`h-5 w-5 ${isActive ? 'stroke-[2.5px]' : 'stroke-2'}`} />
+                                <Icon className={`h-5 w-5 ${isActive ? 'stroke-[2.5px] text-sidebar-primary' : 'stroke-2'}`} />
                                 <span className="flex-1">{link.label}</span>
                                 {isActive && (
                                     <motion.div initial={{ opacity: 0, x: -5 }} animate={{ opacity: 1, x: 0 }}>
@@ -104,6 +104,6 @@ export function Sidebar({ profiles, currentProfileId, userEmail, userRole }: Sid
             <div className="px-8 pb-6 text-[10px] text-center text-gray-400/60 dark:text-white/20 uppercase tracking-widest font-medium">
                 Developed by Dev.Roughclick
             </div>
-        </motion.aside>
+        </motion.aside >
     )
 }
