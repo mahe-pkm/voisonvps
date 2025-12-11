@@ -7,8 +7,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ publ
     const mode = searchParams.get('mode')
 
     // Force 3001 if env is 3000 (common mismatch during dev)
-    const envUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3001"
-    const appUrl = envUrl.includes("3000") ? "http://localhost:3001" : envUrl
+    // Use correct env URL or default to localhost:3000 on VPS
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
     // Use /print view for full 3-copy pdf
     let printUrl = `${appUrl}/bill/${publicUuid}/print`
     if (mode) {
